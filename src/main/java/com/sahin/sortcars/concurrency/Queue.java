@@ -17,21 +17,18 @@ public class Queue {
   public synchronized void enqueue(Runnable runnable) {
     tasks.addLast(runnable);
 
-    notifyAll();
+    this.notifyAll();
   }
 
   public synchronized Runnable dequeue() {
-    Runnable runnable = null;
-
     while (tasks.isEmpty()) {
       try {
         wait();
       } catch (InterruptedException e) {
-        return runnable;
+        return null;
       }
     }
-    runnable = tasks.remove();
-    return runnable;
+    return tasks.poll();
   }
 
   public synchronized boolean isEmpty() {

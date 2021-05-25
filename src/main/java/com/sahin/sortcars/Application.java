@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 
 public class Application {
 
-  public static final int CAR_CAPACITY =  10000;  //100000; // 80000 // 50000;
+  public static final int CAR_CAPACITY = 10000;  //100000; // 80000 // 50000;
   public static final long TWELVE_DIGIT = 100000000000L;
-  public static final int MAX_THREAD = Runtime.getRuntime().availableProcessors();
+  public static final int MAX_THREAD = Runtime.getRuntime().availableProcessors(); //200;
 
   public static void main(String[] args) {
 
@@ -29,7 +29,7 @@ public class Application {
 
     quickSort(cars);
 
-    writeToFile(cars, Car.orderByCity(), "sorted_cars.txt");
+    writeToFile(cars, Car.orderByCity(), "cars_sorted.txt");
   }
 
   private static void quickSort(Car[] carArray) {
@@ -38,11 +38,11 @@ public class Application {
 
     threadPool.submitTask(new QuickSort<>(carArray, 0, carArray.length - 1, threadPool));
 
-    //System.out.printf("Start Waiting  : %d as ms \n", System.currentTimeMillis() - start);
     threadPool.waitUntilAllTasksFinished();
+
     System.out.printf("Execution Time is  : %d as ms \n", System.currentTimeMillis() - start);
+
     threadPool.stop();
-    //System.out.printf("After Stop All : %d as ms \n", System.currentTimeMillis() - start);
 
   }
 

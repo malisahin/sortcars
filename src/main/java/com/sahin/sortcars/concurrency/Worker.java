@@ -9,7 +9,7 @@ public class Worker extends Thread {
 
   private boolean isStopped = false;
   private Thread thread = null;
-  private Queue tasks;
+  private final Queue tasks;
 
   public Worker(Queue tasks, String name) {
     super(name);
@@ -22,7 +22,10 @@ public class Worker extends Thread {
     this.thread = Thread.currentThread();
     while (!isStopped()) {
       try {
-        tasks.dequeue().run();
+        final Runnable runnable = tasks.dequeue();
+
+        if (runnable != null)
+          runnable.run();
       } catch (Exception e) {
         //e.printStackTrace();
         System.out.println(e.getMessage());
