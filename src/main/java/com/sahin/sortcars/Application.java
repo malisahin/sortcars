@@ -2,12 +2,9 @@ package main.java.com.sahin.sortcars;
 
 import main.java.com.sahin.sortcars.concurrency.ThreadPool;
 import main.java.com.sahin.sortcars.model.Car;
-import main.java.com.sahin.sortcars.model.City;
-import main.java.com.sahin.sortcars.model.Color;
 import main.java.com.sahin.sortcars.sort.QuickSort;
 import main.java.com.sahin.sortcars.util.FileUtil;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -20,11 +17,11 @@ import java.util.stream.Collectors;
 
 public class Application {
 
-  public static final int CAR_CAPACITY = 10000;
+  public static final int CAR_CAPACITY =  10000;  //100000; // 80000 // 50000;
   public static final long TWELVE_DIGIT = 100000000000L;
   public static final int MAX_THREAD = Runtime.getRuntime().availableProcessors();
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
 
     final Car[] cars = generateCarArray();
 
@@ -41,7 +38,12 @@ public class Application {
 
     threadPool.submitTask(new QuickSort<>(carArray, 0, carArray.length - 1, threadPool));
 
-    System.out.printf("Sorting Time is  : %d as ms \n", System.currentTimeMillis() - start);
+    //System.out.printf("Start Waiting  : %d as ms \n", System.currentTimeMillis() - start);
+    threadPool.waitUntilAllTasksFinished();
+    System.out.printf("Execution Time is  : %d as ms \n", System.currentTimeMillis() - start);
+    threadPool.stop();
+    //System.out.printf("After Stop All : %d as ms \n", System.currentTimeMillis() - start);
+
   }
 
   public static Car[] generateCarArray() {

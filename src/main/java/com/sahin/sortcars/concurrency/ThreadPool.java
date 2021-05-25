@@ -10,21 +10,25 @@ import java.util.stream.Collectors;
  */
 
 public class ThreadPool {
-  private Queue tasks = new Queue();
+
+  public static final String THREAD_PREFIX = "Worker#";
+  private final Queue tasks  = new Queue();
   private int numberOfThreads;
-  private List<String> threadNameList;
+  private List<Worker> workerList;
 
   public ThreadPool(int numberOfThreads) {
     this.numberOfThreads = numberOfThreads;
+    workerList = new ArrayList<>(numberOfThreads);
     startAllThreads();
+
   }
 
   private void startAllThreads() {
-    threadNameList = new ArrayList<>();
+
     for (int i = 0; i < numberOfThreads; i++) {
-      final String threadName = "Worker#" + i;
-      threadNameList.add(threadName);
+      final String threadName = THREAD_PREFIX + i;
       Worker worker = new Worker(tasks, threadName);
+      workerList.add(worker);
       worker.start();
     }
   }
@@ -32,4 +36,31 @@ public class ThreadPool {
   public void submitTask(Runnable runnable) {
     tasks.enqueue(runnable);
   }
+
+  public synchronized void stop() {
+    for (Worker worker : workerList) {
+      worker.doStop();
+    }
+  }
+
+  public synchronized void waitUntilAllTasksFinished() {
+    while (true) {
+      try {
+        Thread.sleep(1);
+        final boolean hasActive = Thread.getAllStackTraces().keySet()
+            .stream()
+            .filter(thread -> thread.getName().startsWith(THREAD_PREFIX))
+            .anyMatch(thread -> !thread.getState().equals(Thread.State.WAITING));
+
+        if (this.tasks.isEmpty() && !hasActive) {
+          break;
+        }
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+
+
 }

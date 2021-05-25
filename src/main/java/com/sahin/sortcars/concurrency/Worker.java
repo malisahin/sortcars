@@ -7,6 +7,8 @@ package main.java.com.sahin.sortcars.concurrency;
 
 public class Worker extends Thread {
 
+  private boolean isStopped = false;
+  private Thread thread = null;
   private Queue tasks;
 
   public Worker(Queue tasks, String name) {
@@ -17,13 +19,24 @@ public class Worker extends Thread {
 
   @Override
   public void run() {
-    while (true) {
+    this.thread = Thread.currentThread();
+    while (!isStopped()) {
       try {
         tasks.dequeue().run();
       } catch (Exception e) {
+        //e.printStackTrace();
         System.out.println(e.getMessage());
       }
     }
 
+  }
+
+  public synchronized void doStop() {
+    isStopped = true;
+    this.thread.interrupt();
+  }
+
+  public synchronized boolean isStopped() {
+    return isStopped;
   }
 }

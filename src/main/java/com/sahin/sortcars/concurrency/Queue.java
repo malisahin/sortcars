@@ -11,8 +11,12 @@ public class Queue {
 
   private final LinkedList<Runnable> tasks = new LinkedList<>();
 
+  public Queue() {
+  }
+
   public synchronized void enqueue(Runnable runnable) {
     tasks.addLast(runnable);
+
     notifyAll();
   }
 
@@ -28,5 +32,9 @@ public class Queue {
     }
     runnable = tasks.remove();
     return runnable;
+  }
+
+  public synchronized boolean isEmpty() {
+    return tasks.isEmpty();
   }
 }
